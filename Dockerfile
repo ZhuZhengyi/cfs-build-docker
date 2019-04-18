@@ -1,5 +1,4 @@
 FROM golang:1.12-alpine
-MAINTAINER Justice <zhuzhengyi@jd.com>
 
 RUN apk add --update --no-cache build-base linux-headers git wget cmake bash
 RUN apk add --no-cache bzip2-dev coreutils fuse-dev gcc g++ curl make musl-dev perl snappy-dev zlib-dev
