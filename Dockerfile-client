@@ -1,0 +1,32 @@
+# debian:jessie
+FROM "openshift/base-centos7" AS ltp
+
+RUN yum install -y fuse curl xz-utils make gcc flex bison automake autoconf \
+        && yum clean all
+RUN  mkdir -p /tmp/ltp  /opt/ltp \
+    && cd /tmp/ltp \
+    && wget https://github.com/linux-test-project/ltp/archive/20180926.tar.gz \
+    && tar xf 20180926.tar.gz \
+    && cd ltp-20180926 \
+    && make autotools \
+    && ./configure \
+    && make -j "$(getconf _NPROCESSORS_ONLN)" all \
+    && make install \
+    && rm -rf /tmp/ltp
+
+ENV GOPATH /go
+
+RUN yum install -y epel-release \
+        && yum install -y jq psmisc go \
+        && yum clean all
+
+#RUN yum install -y build-base linux-headers git wget cmake bash
+#RUN yum install -y  gcc g++ musl-devel perl snappy-devel zlib-devel psmisc \
+#        && yum clean all
+
+#RUN mkdir -p /tmp/rdb \
+#    && (cd /tmp/rdb; curl -L https://github.com/facebook/rocksdb/archive/v6.0.1.tar.gz | tar xzf -) \
+#    && (cd /tmp/rdb/rocksdb-6.0.1; INSTALL_PATH=/usr make -j4 install-shared) \
+#    && rm -r /tmp/rdb
+
+COPY ltp/runtest/fs  /opt/ltp/runtest/fs
